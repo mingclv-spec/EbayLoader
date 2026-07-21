@@ -1,0 +1,27 @@
+# EbayLoader Configuration
+# Get your API keys from: https://developer.ebay.com/
+
+ebay:
+  api:
+    # Required — eBay Developer Program credentials
+    app_id: "YOUR_APP_ID"
+    cert_id: "YOUR_CERT_ID"
+    dev_id: "YOUR_DEV_ID"
+    redirect_uri: "https://localhost/signin"
+    environment: "sandbox"  # sandbox | production
+    token_path: "~/.ebayloader/token.json"
+
+  seller:
+    merchant_location_key: ""
+    currency: "AUD"
+    country: "AU"
+    default_condition: "NEW"
+    listing_duration: "GTC"
+
+# ── Setup Instructions ──────────────────────────────────────────
+# 1. Go to https://developer.ebay.com/ — sign up for a free account
+# 2. Create an application to get App ID, Cert ID, and Dev ID
+# 3. Set your OAuth redirect URI to: https://localhost/signin
+# 4. Copy those values above
+# 5. Run: ebay auth login
+# 6. Run: ebay batch load sample_batch.csv

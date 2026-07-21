@@ -1,0 +1,3 @@
+sku,title,description,price,quantity,condition,brand,mpn,category_id,photo_paths,aspects
+SKU001,Example Product - Black,A great product description,29.99,10,NEW,AcmeBrand,MPN001,9355,photos/img1.jpg;photos/img2.jpg,"{""Color"":[""Black""],""Size"":[""M""]}"
+SKU002,Example Product - White,Another description,34.99,5,NEW,AcmeBrand,MPN002,9355,photos/img3.jpg,"{""Color"":[""White""],""Size"":[""L""]}"

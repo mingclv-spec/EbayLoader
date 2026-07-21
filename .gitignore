@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+venv/
+.env
+resized_photos/
+token.json
+__pycache__
+.SQLite
