@@ -1,3 +1,6 @@
-sku,title,description,price,quantity,condition,brand,mpn,category_id,photo_paths,aspects
-SKU001,Example Product - Black,A great product description,29.99,10,NEW,AcmeBrand,MPN001,9355,photos/img1.jpg;photos/img2.jpg,"{""Color"":[""Black""],""Size"":[""M""]}"
-SKU002,Example Product - White,Another description,34.99,5,NEW,AcmeBrand,MPN002,9355,photos/img3.jpg,"{""Color"":[""White""],""Size"":[""L""]}"
+sku,title,description,price,quantity,condition,format,category_id,isbn,author,topic,brand,photo_paths,location,shipping_cost,return_days
+SKU001,"Supporting Education 4th Edition by Karen Kearns","Comprehensive textbook for early childhood educators. 4th edition in like-new condition. Clean pages.",76.00,1,LIKE_NEW,Paperback,261186,9780170458658,Karen Kearns,Education,Cengage,photos/book1_front.jpg;photos/book1_back.jpg,"Northbridge, NSW",15.19,30
+SKU002,"Biology in Focus Year 11 Student Book","Year 11 Biology textbook with access codes included. Lightly used.",29.65,1,VERY_GOOD,Paperback,261186,,Glenda Chidrawi,Biology,Pearson,photos/book2_front.jpg,"Northbridge, NSW",12.00,30
+SKU003,"Pearson Chemistry 11 NSW Student Book","New South Wales Chemistry textbook. Minimal shelf wear.",62.76,1,LIKE_NEW,Paperback,261186,,,Chemistry,Pearson,photos/book3_front.jpg,"Northbridge, NSW",15.19,30
+SKU004,"Frankenstein Insight Text Guide","Perfect for HSC English. Clean copy.",17.85,2,GOOD,Paperback,261186,,,English Literature,Insight,photos/book4_front.jpg,"Northbridge, NSW",10.00,30
+SKU005,"The Early Childhood Educator for Certificate III","Latest edition, lightly used.",95.45,1,LIKE_NEW,Paperback,261186,,Lorraine Walker,Education,,photos/book5_front.jpg,"Northbridge, NSW",15.19,30

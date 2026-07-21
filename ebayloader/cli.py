@@ -109,7 +109,7 @@ def config():
 def config_show(ctx):
     """Show current configuration."""
     cfg = get_config(ctx)
-    table = Table(title="⚙️  Configuration")
+    table = Table(title="Configuration")
     table.add_column("Key", style="cyan")
     table.add_column("Value", style="white")
     table.add_column("Source", style="yellow")
@@ -119,7 +119,7 @@ def config_show(ctx):
         in_env = env_key in __import__("os").environ
         source = "env" if in_env else "file" if val else "missing"
         style = "green" if val else "red"
-        table.add_row(dot_key, f"[{style}]{val or '—'}[/{style}]", source)
+        table.add_row(dot_key, f"[{style}]{val or '---'}[/{style}]", source)
 
     console.print(table)
 
@@ -134,7 +134,7 @@ def config_init(ctx, output):
 
 ebay:
   api:
-    # Required — eBay Developer Program credentials
+    # Required -- eBay Developer Program credentials
     app_id: "YOUR_APP_ID"
     cert_id: "YOUR_CERT_ID"
     dev_id: "YOUR_DEV_ID"
@@ -149,8 +149,8 @@ ebay:
     default_condition: "NEW"
     listing_duration: "GTC"
 
-# ── Setup Instructions ──────────────────────────────────────────
-# 1. Go to https://developer.ebay.com/ — sign up for a free account
+# Setup Instructions
+# 1. Go to https://developer.ebay.com/ -- sign up for a free account
 # 2. Create an application to get App ID, Cert ID, and Dev ID
 # 3. Set your OAuth redirect URI to: https://localhost/signin
 # 4. Copy those values above
@@ -159,10 +159,10 @@ ebay:
 """
     out = Path(output)
     if out.exists():
-        if not click.confirm(f"⚠️  {out} exists. Overwrite?"):
+        if not click.confirm(f"Warning: {out} exists. Overwrite?"):
             return
     out.write_text(sample)
-    console.print(f"[green]✅ Sample config written to {out}[/green]")
+    console.print(f"[green]Sample config written to {out}[/green]")
     console.print("   Edit it with your eBay API keys, then run [bold]ebay auth login[/bold]")
 
 
@@ -179,8 +179,7 @@ def inventory_list(ctx):
     """List existing inventory items (TODO)."""
     cfg = get_config(ctx)
     api = eBayAPI(cfg)
-    # eBay doesn't have a simple list endpoint — requires paginated search
-    console.print("[yellow]Use [bold]ebay bat ch load[/bold] to see current items in your batch file.[/yellow]")
+    console.print("[yellow]Use [bold]ebay batch load[/bold] to see current items in your batch file.[/yellow]")
 
 
 @inventory.command("delete")
@@ -194,9 +193,9 @@ def inventory_delete(ctx, sku):
     mgr = InventoryManager(api)
     try:
         mgr.delete_item(sku)
-        console.print(f"[green]✅ Deleted {sku}[/green]")
+        console.print(f"[green]Deleted {sku}[/green]")
     except Exception as e:
-        console.print(f"[red]❌ Failed: {e}[/red]")
+        console.print(f"[red]Failed: {e}[/red]")
 
 
 # ── Batch Commands ────────────────────────────────────────────────
@@ -217,24 +216,24 @@ def batch_load(ctx, file, publish, no_resize, dry_run):
     cfg = get_config(ctx)
     api = eBayAPI(cfg)
 
-    console.print(f"[bold]🚀 EbayLoader — Batch Listing[/bold]\n")
+    console.print("[bold]EbayLoader -- Batch Listing[/bold]\n")
 
     # Load items
-    console.print(f"📂 Loading from: {file}")
+    console.print(f"Loading from: {file}")
     try:
         items = load_batch_file(Path(file))
     except Exception as e:
-        console.print(f"[red]❌ Failed to load file: {e}[/red]")
+        console.print(f"[red]Failed to load file: {e}[/red]")
         sys.exit(1)
 
     if not items:
-        console.print("[red]❌ No items found in file.[/red]")
+        console.print("[red]No items found in file.[/red]")
         sys.exit(1)
 
     console.print(f"   Found [bold]{len(items)}[/bold] item(s)\n")
 
     # Preview
-    table = Table(title="📋 Items to List")
+    table = Table(title="Items to List")
     table.add_column("SKU", style="cyan")
     table.add_column("Title", style="white")
     table.add_column("Price", style="green")
@@ -252,7 +251,7 @@ def batch_load(ctx, file, publish, no_resize, dry_run):
     console.print(table)
 
     if dry_run:
-        console.print("\n[yellow]🧪 DRY RUN MODE[/yellow]")
+        console.print("\n[yellow]DRY RUN MODE[/yellow]")
 
     if not click.confirm("\nProceed?"):
         console.print("[yellow]Cancelled.[/yellow]")
@@ -267,20 +266,29 @@ def batch_load(ctx, file, publish, no_resize, dry_run):
         dry_run=dry_run,
     )
 
-    console.print(f"\n[bold green]✅ Done![/bold green]")
+    console.print("[bold green]Done![/bold green]")
 
 
 @batch.command("template")
 @click.option("--output", "-o", default="sample_batch.csv", help="Output path")
 def batch_template(output):
     """Generate a sample CSV template for batch listings."""
-    sample = """sku,title,description,price,quantity,condition,brand,mpn,category_id,photo_paths,aspects
-SKU001,Example Product - Black,A great product description,29.99,10,NEW,AcmeBrand,MPN001,9355,photos/img1.jpg;photos/img2.jpg,"{""Color"":[""Black""],""Size"":[""M""]}"
-SKU002,Example Product - White,Another description,34.99,5,NEW,AcmeBrand,MPN002,9355,photos/img3.jpg,"{""Color"":[""White""],""Size"":[""L""]}"
-"""
+    sample = (
+        "sku,title,description,price,quantity,condition,format,"
+        "category_id,isbn,author,topic,brand,"
+        "photo_paths,location,shipping_cost,return_days\n"
+        'SKU001,"Supporting Education 4th Edition","Like-new textbook. Clean pages.",'
+        "76.00,1,LIKE_NEW,Paperback,261186,9780170458658,"
+        'Karen Kearns,Education,Cengage,photos/img1.jpg;photos/img2.jpg,'
+        '"Northbridge, NSW",15.19,30\n'
+        'SKU002,"Biology in Focus Year 11","Year 11 textbook with access codes.",'
+        "29.65,1,VERY_GOOD,Paperback,261186,,"
+        'Glenda Chidrawi,Biology,Pearson,photos/img3.jpg,'
+        '"Northbridge, NSW",12.00,30\n'
+    )
     out = Path(output)
     out.write_text(sample)
-    console.print(f"[green]✅ Sample CSV written to {out}[/green]")
+    console.print(f"[green]Sample CSV written to {out}[/green]")
     console.print("   Edit it with your products, then run [bold]ebay batch load sample_batch.csv[/bold]")
 
 
@@ -290,11 +298,11 @@ SKU002,Example Product - White,Another description,34.99,5,NEW,AcmeBrand,MPN002,
 def show_guide():
     """Show a quick-start guide."""
     guide = """
-[bold cyan]🚀 EbayLoader Quick Start Guide[/bold cyan]
+[bold cyan]EbayLoader Quick Start Guide[/bold cyan]
 
 [bold]1. Get eBay API Keys[/bold]
    - Go to https://developer.ebay.com/
-   - Create an app → get App ID, Cert ID, Dev ID
+   - Create an app > get App ID, Cert ID, Dev ID
    - Set redirect URI to: https://localhost/signin
 
 [bold]2. Configure[/bold]
@@ -318,8 +326,6 @@ def show_guide():
    - Use --publish to list immediately (instead of draft)
    - Start with sandbox (ebay.api.environment: sandbox)
    - Photos resize automatically to 1600px max
-
-[link=https://developer.ebay.com/api-docs/sell/inventory/overview.html]eBay Inventory API Docs[/link]
 """
     console.print(guide)
 

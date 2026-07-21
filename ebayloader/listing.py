@@ -28,9 +28,18 @@ OFFER_DEFAULTS = {
 
 
 def load_batch_csv(path: Path) -> List[dict]:
-    """Load products from CSV. Required columns: sku, title, price, quantity, photo_paths
+    """Load products from CSV.
 
-    Optional: description, condition, brand, mpn, category_id, aspects (JSON string)
+    Based on real eBay listing fields (from seller pandor429 / Pandora Books).
+
+    Required columns:
+        sku, title, price, quantity, condition, category_id, photo_paths
+
+    Strongly recommended (item specifics / aspects):
+        format, isbn, author, topic, brand, mpn
+
+    Shipping & policy fields:
+        location ("Suburb, State"), shipping_cost, return_days (e.g. 30)
     """
     items = []
     with open(path, newline="", encoding="utf-8-sig") as f:
@@ -41,6 +50,25 @@ def load_batch_csv(path: Path) -> List[dict]:
                 continue
 
             photo_paths = row.get("photo_paths", "").strip()
+
+            # Build aspects from known book-specific columns
+            aspects = {}
+            for aspect_key in ("format", "isbn", "author", "topic",
+                               "language", "publisher", "edition", "genre"):
+                val = row.get(aspect_key, "").strip()
+                if val:
+                    aspects[aspect_key.title()] = [val]
+
+            # Add custom aspects from JSON string if provided
+            aspects_raw = row.get("aspects", "")
+            if aspects_raw.strip():
+                try:
+                    custom = json.loads(aspects_raw)
+                    if isinstance(custom, dict):
+                        aspects.update(custom)
+                except json.JSONDecodeError:
+                    pass
+
             item = {
                 "sku": sku,
                 "title": row.get("title", "").strip(),
@@ -52,7 +80,10 @@ def load_batch_csv(path: Path) -> List[dict]:
                 "mpn": row.get("mpn", "").strip(),
                 "category_id": row.get("category_id", "").strip(),
                 "photo_paths": [p.strip() for p in photo_paths.split(";") if p.strip()],
-                "aspects": {},
+                "aspects": aspects,
+                "location": row.get("location", "").strip(),
+                "shipping_cost": float(row.get("shipping_cost", 0)) if row.get("shipping_cost", "").strip() else 0,
+                "return_days": int(row.get("return_days", 30)) if row.get("return_days", "").strip() else 30,
             }
 
             # Parse aspects from JSON string if provided
