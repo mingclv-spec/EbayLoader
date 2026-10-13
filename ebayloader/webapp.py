@@ -1,6 +1,7 @@
 """Book-to-eBay listing draft UI. Run: streamlit run ebayloader/webapp.py."""
 from __future__ import annotations
-import csv, io, json
+import csv, io, json, os
+import requests
 from datetime import datetime
 from typing import Any, Dict
 import streamlit as st
@@ -138,6 +139,37 @@ with st.form("listing_form"):
 if save:
     st.session_state.draft={"sku":sku,"title":title,"subtitle":subtitle,"author":author,"publisher":publisher,"publication_date":pubdate,"edition":edition,"isbn":isbn2,"format":fmt,"language":language,"pages":pages,"condition":condition,"condition_notes":condition_notes,"description":description,"category_id":category,"price":price,"quantity":quantity,"location":location,"shipping_cost":shipping,"return_days":returns,"photo_filenames":photos,"research_notes":notes}
     st.success("Draft saved in this browser session.")
+
+st.subheader("AI-assisted description")
+st.caption("Optional: uses your own OpenAI API key. It drafts copy only from the fields you have confirmed; review before using.")
+if st.button("Generate listing description with AI"):
+    api_key = os.environ.get("OPENAI_API_KEY", "").strip()
+    if not api_key:
+        st.warning("Set OPENAI_API_KEY in your environment and restart the app to enable AI writing.")
+    else:
+        facts = {k: st.session_state.draft.get(k, "") for k in ("title", "subtitle", "author", "publisher", "publication_date", "edition", "isbn", "format", "language", "pages", "condition", "condition_notes")}
+        prompt = (
+            "Write a concise, buyer-friendly second-hand book listing description. "
+            "Use only facts in the supplied JSON. Do not invent contents, edition details, "
+            "included supplements, access codes, signatures, provenance, or guarantees. "
+            "If a value is blank, omit it. Mention the supplied condition notes neutrally. "
+            "Return plain text only, without a price or claims that the book is rare.\\n\\n"
+            + json.dumps(facts, ensure_ascii=False)
+        )
+        try:
+            response = requests.post(
+                "https://api.openai.com/v1/chat/completions",
+                headers={"Authorization": "Bearer " + api_key, "Content-Type": "application/json"},
+                json={"model": os.environ.get("OPENAI_MODEL", "gpt-4.1-mini"), "messages": [{"role": "user", "content": prompt}], "temperature": 0.2},
+                timeout=45,
+            )
+            response.raise_for_status()
+            description = response.json()["choices"][0]["message"]["content"].strip()
+            st.session_state.draft["description"] = description
+            st.success("AI description generated. It has been placed in the draft; review and edit it in the description field above.")
+            st.rerun()
+        except Exception as exc:
+            st.error("AI generation failed: " + str(exc)[:300])
 
 st.subheader("4 · Export")
 row=st.session_state.draft.copy()
