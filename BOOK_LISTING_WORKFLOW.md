@@ -37,3 +37,8 @@ The app works without OCR; enter the ISBN manually. For OCR support, install req
 1. Test ISBN matching across books with different editions.
 2. Refine required fields, category/aspects and condition mapping for your seller account.
 3. If desired, add authenticated eBay listing creation only after draft review and explicit publish confirmation.
+
+
+## Optional AI-assisted description
+
+Set the OPENAI_API_KEY environment variable before starting Streamlit to enable description drafting. OPENAI_MODEL is optional and defaults to gpt-4.1-mini. The feature sends only the selected bibliographic and condition fields to the OpenAI API. Do not put the API key in source control. Generated text is a draft and must be reviewed.
