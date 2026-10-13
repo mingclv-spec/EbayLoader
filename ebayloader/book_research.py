@@ -22,7 +22,7 @@ def valid_isbn(value: str) -> bool:
     return False
 
 def extract_isbns(text: str) -> List[str]:
-    candidates = re.findall(r"(?i)(?:ISBN(?:-1[03])?\\s*:?\\s*)?((?:97[89][\\s-]?)?\\d[\\dXx\\s-]{8,20}\\d|[\\dXx][\\dXx\\s-]{8,20})", text or "")
+    candidates = re.findall(r"(?i)(?:ISBN(?:-1[03])?\s*:?\s*)?((?:97[89][\s-]?)?\d[\dXx\s-]{8,20}\d|[\dXx][\dXx\s-]{8,20})", text or "")
     found = []
     for candidate in candidates:
         isbn = normalize_isbn(candidate)
