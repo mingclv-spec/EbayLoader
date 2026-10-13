@@ -153,7 +153,7 @@ if st.button("Generate listing description with AI"):
             "Use only facts in the supplied JSON. Do not invent contents, edition details, "
             "included supplements, access codes, signatures, provenance, or guarantees. "
             "If a value is blank, omit it. Mention the supplied condition notes neutrally. "
-            "Return plain text only, without a price or claims that the book is rare.\\n\\n"
+            "Return plain text only, without a price or claims that the book is rare.\n\n"
             + json.dumps(facts, ensure_ascii=False)
         )
         try:
